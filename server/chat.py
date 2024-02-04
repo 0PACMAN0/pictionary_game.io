@@ -1,10 +1,11 @@
 
-from .round import round
+
 
 
 class Chat(object):
     def __init__(self, r):
         self.content = []
+        self.round = r
 
     def update_chat(self, msg):
         self.content.append(msg)

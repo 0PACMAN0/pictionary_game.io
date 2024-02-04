@@ -1,19 +1,24 @@
 import time as t
+# from _thread import *
+# from game import Game
 from _thread import *
-from .game import Game
-from .chat import Chat
+from chat import Chat
 
 
 class Round(object):
-    def __init__(self, word, player_drawing, players,game):
+    def __init__(self, word, player_drawing, players, game):
         self.word = word
         self.player_drawing = player_drawing
         self.player_guessed = []
         self.skips = 0
         self.player_scores = {player: 0 for player in players}
         self.time = 75
+        self.game = game
         self.chat = Chat(self)
         # self.start=time.time()
+        """
+        check the lline above
+        """
         start_new_thread(self.time_thread, ())
 
     def skip(self):
@@ -42,6 +47,7 @@ class Round(object):
         while self.time > 0:
             t.sleep(1)
             self.time -= 1
+
         self.end_round(" Time is up ")
 
     def guess(self, player, wrd):
@@ -70,4 +76,6 @@ class Round(object):
             self.end_round(" drawing player leaves ")
 
     def end_round(self):
-        pass
+        for player in self.player:
+            player.update_score(self.player_scores[player])
+        self.game.round_ended()

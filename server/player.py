@@ -1,4 +1,4 @@
-from .game import Game
+from game import Game
 
 
 class Player(object):
@@ -6,7 +6,7 @@ class Player(object):
         """
         init player object
 
-        :param ip:str         :param name:
+        :param ip:str         :param name:str
 
         """
         self.game = None
@@ -33,9 +33,10 @@ class Player(object):
     def disconnect(self):
         """
         call to disconnect player
-        requires execption
+        requires execution
         :return:None
         """
+        self.game.player_disconnected(self)
 
     def get_score(self):
         return self.score

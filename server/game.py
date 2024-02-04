@@ -1,10 +1,11 @@
-from .player import Player
-from .board import Board
-from .round import Round
+import random
+
+from board import Board
+from round import Round
 
 
 class Game(object):
-    def __init__(self, id, players, thread):
+    def __init__(self, id, players):
         """
         init the game! once players threshold is met
 
@@ -16,25 +17,30 @@ class Game(object):
         self.players = players
         self.words_used = []
         self.round = None
-        self.board = Board
+        self.board = Board()
         self.player_draw_ind = 0
+        self.round = 1
+        self.round_count=0
         self.start_new_round()
-        self.create_board()
-        self.connected_thread = thread
+        # self.create_board()
+        # self.connected_thread = thread
 
     def start_new_round(self):
-        self.round = Round(self.get_word(), self.players[self.player_draw_ind],self.players,self)
+        round_word = self.get_word()
+        # self.words_used.append(round_word)
+        self.round = Round(self.get_word(), self.players[self.player_draw_ind], self.players, self)
         self.player_draw_ind += 1
-
+        self.round_count += 1
         if self.player_draw_ind >= len(self.players):
             self.end_round()
             self.end_game()
+
 
     def player_guess(self, player, guess):
         """makes the player guess the word
 
         """
-        return self.round.guess(player,guess)
+        return self.round.guess(player, guess)
 
     def player_disconnected(self, player):
         """
@@ -43,7 +49,20 @@ class Game(object):
         :param player: Player
         :return: Execption()
         """
-        pass
+        if player in self.players:
+            player_ind = self.players.index(player)
+            if player_ind >= self.player_draw_ind:
+                self.player_draw_ind -= 1
+            self.players.remove(player)
+            self.round.player_left(player)
+        else:
+            raise Exception("Player not in game ")
+        if len(self.players) <= 2:
+            self.end_game()
+
+    def get_player_scores(self):
+        scores = {player: player.get_score() for player in self.players}
+        return scores
 
     def skip(self):
         """
@@ -64,7 +83,7 @@ class Game(object):
 
     def update_board(self, x, y, color):
 
-        self.board.update(x, y, color)
+        # self.board.update(x, y, color)
 
         if not self.board:
             raise Exception("no board created ")
@@ -75,6 +94,8 @@ class Game(object):
         to end the game tha ti s disconect
         :return:
         """
+        for player in self.players:
+            self.round.player_disconnected()
 
     def get_word(self):
         """
@@ -82,4 +103,12 @@ class Game(object):
         :return: str
         """
         # to do get a list of words from someone
-        pass
+        with open("words.txt", "r") as f:
+            words = []
+            for line in f:
+                wrd = line.strip()
+                if wrd not in self.words_used:
+                    words.append(wrd)
+            self.words_used.add(wrd)
+            r = random.randint(0, len(words) - 1)
+            return words[r].strip()
