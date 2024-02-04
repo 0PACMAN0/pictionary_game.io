@@ -95,7 +95,7 @@ class Server(object):
             player.game.player_disconnected(player)
         if player in self.connection_queue:
             self.connection_queue.remove(player)
-        print(f"[EXCEPTION] {player.get_name()} disconnected:", str(Exception))
+        print(f"[DISCONNECTED] {player.get_name()} disconnected:")
         conn.close()
 
     def handle_queue(self, player):
@@ -138,20 +138,21 @@ class Server(object):
 
     def connection_thread(self):
         server = "localhost"
-        port = 5500
+        port = 5556
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         try:
             s.bind((server, port))
         except socket.error as e:
             str(e)
+            # print(e)
 
         s.listen(1)
         print("waiting for a connection, server started")
 
         while True:
             conn, addr = s.accept()
-            print("[LOG] new connection! ", addr)
+            print("[LOG] new connection! ")
             # print(f"[message]:",self.data)
             self.authentication(conn, addr)
 

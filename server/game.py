@@ -20,7 +20,7 @@ class Game(object):
         self.board = Board()
         self.player_draw_ind = 0
         self.round = 1
-        self.round_count=0
+        self.round_count = 0
         self.start_new_round()
         # self.create_board()
         # self.connected_thread = thread
@@ -29,14 +29,14 @@ class Game(object):
         try:
             round_word = self.get_word()
             # self.words_used.append(round_word)
-            self.round = Round(self.get_word(), self.players[self.player_draw_ind], self.players, self)
+            self.round = Round(self.get_word(), self.players[self.player_draw_ind], self)
             self.player_draw_ind += 1
             self.round_count += 1
             if self.player_draw_ind >= len(self.players):
                 self.round_ended()
                 self.end_game()
 
-            self.player_draw_ind+=1
+            self.player_draw_ind += 1
         except Exception as e:
             self.end_game()
 
@@ -65,7 +65,7 @@ class Game(object):
             self.end_game()
 
     def get_player_scores(self):
-        scores = {player: player.get_score() for player in self.players}
+        scores = {player.name: player.get_score() for player in self.players}
         return scores
 
     def skip(self):
@@ -102,7 +102,7 @@ class Game(object):
         """
         print(f"[GAME] Game {self.id} ended")
         for player in self.players:
-            self.round.player_left(player)
+            player.game = None
 
     def get_word(self):
         """

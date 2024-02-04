@@ -8,7 +8,7 @@ class Network(object):
     def __init__(self, name):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server = "localhost"
-        self.port = 5500
+        self.port = 5556
         self.addr = (self.server, self.port)
         self.name = name
         self.connect()
@@ -63,16 +63,15 @@ class Network(object):
             self.disconnect(e)
 
     def disconnect(self, msg):
-        print("[EXCEPTION]dis from server", msg)
-        # self.client.shutdown()
-        # self.send({10: []})
+        print("[EXCEPTION]disconnected from server", msg)
+
         self.client.close()
 
 
 n = Network("jagan")
 # print(n.connect())
 # print(n.send('{0: ""}'))
-print(n.send({0: ["hello "]}))
+print(n.send({4: []}))
 
 # print(n.send({'0': []}))
 #

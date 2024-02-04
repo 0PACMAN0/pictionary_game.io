@@ -6,16 +6,17 @@ from chat import Chat
 
 
 class Round(object):
-    def __init__(self, word, player_drawing, players, game):
+    def __init__(self, word, player_drawing, game):
         self.word = word
         self.player_drawing = player_drawing
         self.player_guessed = []
         self.skips = 0
-        self.player_scores = {player: 0 for player in players}
+
         self.time = 75
         self.game = game
         self.chat = Chat(self)
-        self.players = players
+        # self.players = players
+        self.player_scores = {player: 0 for player in game.players}
         # self.start=time.time()
         """
         check the lline above
@@ -24,14 +25,14 @@ class Round(object):
 
     def skip(self):
         self.skips += 1
-        if self.skips > len(self.players) - 2:
+        if self.skips > len(self.game.players) - 2:
             self.skips = 0
             return True
         return False
 
     def get_scores(self):
         """return all players score"""
-        return self.scores
+        return self.player_scores
 
     def get_score(self, players):
         if players in self.player_scores:
@@ -78,6 +79,9 @@ class Round(object):
             self.end_round(" drawing player leaves ")
 
     def end_round(self):
-        for player in self.player:
-            player.update_score(self.player_scores[player])
+        for player in self.game.players:
+            if player in self.player_scores:
+                player.update_score(self.player_scores[player])
+            # else:
+
         self.game.round_ended()
