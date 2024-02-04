@@ -29,20 +29,23 @@ class Server(object):
                     # send_msg = {}
                     data = conn.recv(1024)
                     data = json.loads(data.decode())
+                    print("[LOG]received data:",data)
                 except Exception as e:
                     break
                 keys = [int(key) for key in data.keys()]
                 send_msg = {key: [] for key in keys}
+                last_board = None
                 for key in keys:
                     if key == -1:  # get game
                         if player.game:
-                            send_msg[-1] = player.game.players
+                            send = {player.get_name(): player.get_score() for player in player.game.players}
+                            send_msg[-1] = send
                         else:
                             send_msg[-1] = []
 
                     if player.game:
                         if key == 0:  # guess
-                            correct = player.game.player_guess(player, data[0][0])
+                            correct = player.game.player_guess(player, data['0'][0])
                             send_msg[0] = correct
                         elif key == 1:  # skip
                             skip = player.game.skip()
@@ -85,13 +88,14 @@ class Server(object):
                 conn.sendall(send_msg.encode() + ".".encode())
 
             except Exception() as e:
-                print(f"[EXCEPTION] {player.get_name()} disconnected", e)
+                print(f"[EXCEPTION] {player.get_name()}:", e)
+                # print(e)
                 break
         if player.game:
             player.game.player_disconnected(player)
         if player in self.connection_queue:
             self.connection_queue.remove(player)
-        print(f"[EXCEPTION] {player.get_name()} disconnected")
+        print(f"[EXCEPTION] {player.get_name()} disconnected:", str(Exception))
         conn.close()
 
     def handle_queue(self, player):
@@ -101,14 +105,14 @@ class Server(object):
         :return:
         """
         self.connection_queue.append(player)
-        if len(self.connection_queue) >= 8:
+        if len(self.connection_queue) >= self.PLAYERS:
             game = Game(self.game_id, self.connection_queue[:])
 
-            for p in self.connection_queue:
+            for p in game.players:
                 p.set_game(game)
             self.game_id += 1
             self.connection_queue = []
-            print(f"[GAME] Game {self.game_id-1} started...")
+            print(f"[GAME] Game {self.game_id - 1} started...")
 
     def authentication(self, conn, addr):
         """
@@ -148,7 +152,8 @@ class Server(object):
         while True:
             conn, addr = s.accept()
             print("[LOG] new connection! ", addr)
-            self.authentication(conn,addr)
+            # print(f"[message]:",self.data)
+            self.authentication(conn, addr)
 
 
 if __name__ == "__main__":

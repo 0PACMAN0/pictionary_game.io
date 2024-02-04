@@ -15,6 +15,7 @@ class Round(object):
         self.time = 75
         self.game = game
         self.chat = Chat(self)
+        self.players = players
         # self.start=time.time()
         """
         check the lline above
@@ -59,8 +60,9 @@ class Round(object):
         """
         correct = wrd == self.word
         if correct:
-            self.player_guessed.append(correct)
-        return wrd == self.word
+            self.player_guessed.append(player)
+            return True
+        return False
 
     def player_left(self, player):
         """

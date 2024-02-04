@@ -26,15 +26,19 @@ class Game(object):
         # self.connected_thread = thread
 
     def start_new_round(self):
-        round_word = self.get_word()
-        # self.words_used.append(round_word)
-        self.round = Round(self.get_word(), self.players[self.player_draw_ind], self.players, self)
-        self.player_draw_ind += 1
-        self.round_count += 1
-        if self.player_draw_ind >= len(self.players):
-            self.end_round()
-            self.end_game()
+        try:
+            round_word = self.get_word()
+            # self.words_used.append(round_word)
+            self.round = Round(self.get_word(), self.players[self.player_draw_ind], self.players, self)
+            self.player_draw_ind += 1
+            self.round_count += 1
+            if self.player_draw_ind >= len(self.players):
+                self.round_ended()
+                self.end_game()
 
+            self.player_draw_ind+=1
+        except Exception as e:
+            self.end_game()
 
     def player_guess(self, player, guess):
         """makes the player guess the word
@@ -73,6 +77,8 @@ class Game(object):
             new_round = self.round.skip()
             if new_round:
                 self.round_ended()
+                return True
+            return False
         else:
             raise Exception("No round statrted yet!")
 
@@ -94,8 +100,9 @@ class Game(object):
         to end the game tha ti s disconect
         :return:
         """
+        print(f"[GAME] Game {self.id} ended")
         for player in self.players:
-            self.round.player_disconnected()
+            self.round.player_left(player)
 
     def get_word(self):
         """

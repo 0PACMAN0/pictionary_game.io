@@ -27,12 +27,37 @@ class Network(object):
             # self.client.close()
             self.disconnect(e)
 
+    def send_str(self, data):
+        try:
+            self.client.connect(self.addr)
+            self.client.sendall(self.name.encode())
+            return json.loads(self.client.recv(2048))
+        except Exception as e:
+            self.disconnect(e)
+
     def send(self, data):
 
         try:
-            data = bytes(data, "utf-8")
+            # data = bytes(data, "utf-8")
+            # self.client.connect(self.addr)
             self.client.send(json.dumps(data).encode())
-            return json.loads(self.client.recv(2048))
+            d = ""
+            while 1:
+                last = self.client.recv(1024).decode()
+                d += last
+                try:
+                    if d.count(".") == 1:
+                        break
+                except:
+                    pass
+                try:
+                    if d[-1] == ".":
+                        d = d[:-1]
+                except:
+                    pass
+
+                keys = [key for key in data.keys()]
+                return json.loads(d)(str(keys[0]))
         except socket.error as e:
             # print(e)
             self.disconnect(e)
@@ -40,9 +65,21 @@ class Network(object):
     def disconnect(self, msg):
         print("[EXCEPTION]dis from server", msg)
         # self.client.shutdown()
+        # self.send({10: []})
         self.client.close()
 
 
 n = Network("jagan")
-print(n.connect())
-print(n.send('{0: ""}'))
+# print(n.connect())
+# print(n.send('{0: ""}'))
+print(n.send({0: ["hello "]}))
+
+# print(n.send({'0': []}))
+#
+# print("send 1")
+# time = n.send({3: []})
+# print(time)
+# t.sleep(0.1)
+# print("send 2")
+# time = n.send({5: []})
+# print(time)
