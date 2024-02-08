@@ -2,6 +2,7 @@ import random
 
 from board import Board
 from round import Round
+# from chat import Chat
 
 
 class Game(object):
@@ -15,12 +16,12 @@ class Game(object):
         """
         self.id = id
         self.players = players
-        self.words_used = []
+        self.words_used = set
         self.round = None
         self.board = Board()
         self.player_draw_ind = 0
-        self.round = 1
-        self.round_count = 0
+        # self.round =
+        self.round_count = 1
         self.start_new_round()
         # self.create_board()
         # self.connected_thread = thread
@@ -44,6 +45,7 @@ class Game(object):
         """makes the player guess the word
 
         """
+
         return self.round.guess(player, guess)
 
     def player_disconnected(self, player):
@@ -59,6 +61,7 @@ class Game(object):
                 self.player_draw_ind -= 1
             self.players.remove(player)
             self.round.player_left(player)
+            self.round.chat.update_chat("player {player.get_name()} disconnected")
         else:
             raise Exception("Player not in game ")
         if len(self.players) <= 2:
@@ -75,7 +78,9 @@ class Game(object):
         """
         if self.round:
             new_round = self.round.skip()
+            self.round.chat.update_chat(f"Player has voted to skip ({self.round.skips}/{len(self.players)-2})")
             if new_round:
+                self.round.chat.update_chat(f"round has been skipped.")
                 self.round_ended()
                 return True
             return False
@@ -84,6 +89,7 @@ class Game(object):
 
     def round_ended(self):
         # self.round.skips=0
+        self.round.chat.update_chat(f"round{self.round_count} has ended!!!")
         self.start_new_round()
         self.board.clear()
 
