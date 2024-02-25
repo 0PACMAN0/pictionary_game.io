@@ -35,5 +35,5 @@ class TextButton(Button):
 
     def draw(self, win):
         super().draw(win)
-        txt = self.text_font.render(self.text, 1, (0, 0, 0))
+        txt = self.text_font.render(str(self.text), 1, (0, 0, 0))
         win.blit(txt, (self.x + self.width / 2 - txt.get_width() / 2, self.y + self.height / 2 - txt.get_height() / 2))

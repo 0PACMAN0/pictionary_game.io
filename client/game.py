@@ -2,11 +2,12 @@ import pygame
 from button import Button, TextButton
 from board import Board
 from top_bar import TopBar
-# from main_menu import MainMenu
-from menu import Menu
+from main_menu import MainMenu
+
 # from tool_bar import ToolBar
 from leaderboard import Leaderboard
 from player import Player
+from bottom_bar import BottomBar
 
 
 class Game(object):
@@ -24,21 +25,41 @@ class Game(object):
     }
 
     def __init__(self):
-        self.HEIGHT = 500
-        self.WIDTH = 900
+        self.HEIGHT = 800
+        self.WIDTH = 1000
         self.win = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
-        self.leaderboard = Leaderboard(100, 120)
+        self.leaderboard = Leaderboard(50, 120)
         self.board = Board(300, 120)
-        self.top_bar = TopBar(50, 50, 500, 50)
+        self.top_bar = TopBar(10, 10, 800, 100)
         self.top_bar.change_round(1)
+        self.players = [Player("Tim"), Player("Timu"), Player("Timi"), Player("Time"), Player("Tiem")]
+        self.skip_button = TextButton(200, 800, 100, 50, (255, 255, 0), "SKIP")
+        self.bottom_bar = BottomBar(10, 810,self)
+        self.chat = Chat(1000, 125)
+        self.draw_color = (0, 0, 0)
+        for player in self.players:
+            self.leaderboard.add_player(player)
 
     def draw(self):
         self.win.fill(self.BG)
         self.leaderboard.draw(self.win)
         self.top_bar.draw(self.win)
         self.board.draw(self.win)
-
+        self.skip_button.draw(self.win)
+        self.chat.draw()
         pygame.display.update()
+
+    def check_clicks(self):
+        """
+        handles clicks
+        :return:
+        """
+        mouse = pygame.mouse.get_pos()
+        if self.skip_button.click(*mouse):
+            print("skipped")
+        clicked_board = self.board.click(*mouse)
+        if clicked_board:
+            self.board.update(*clicked_board, (0, 0, 0))
 
     def run(self):
         run = True
@@ -50,6 +71,8 @@ class Game(object):
                 if event.type == pygame.QUIT:
                     run = False
                     break
+                if pygame.mouse.get_pressed()[0]:
+                    self.check_clicks()
         pygame.quit()
 
 
