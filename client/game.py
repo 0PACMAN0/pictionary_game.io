@@ -8,6 +8,7 @@ from main_menu import MainMenu
 from leaderboard import Leaderboard
 from player import Player
 from bottom_bar import BottomBar
+from network import Network
 
 
 class Game(object):
@@ -24,17 +25,17 @@ class Game(object):
         (128, 0, 128): 8
     }
 
-    def __init__(self):
-        self.HEIGHT = 800
-        self.WIDTH = 1000
-        self.win = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+    def __init__(self, win ,connection = None):
+        self.connection=connection
+        pygame.font.init()
+        self.win = win
         self.leaderboard = Leaderboard(50, 120)
         self.board = Board(300, 120)
         self.top_bar = TopBar(10, 10, 800, 100)
         self.top_bar.change_round(1)
-        self.players = [Player("Tim"), Player("Timu"), Player("Timi"), Player("Time"), Player("Tiem")]
+        self.players = []
         self.skip_button = TextButton(200, 800, 100, 50, (255, 255, 0), "SKIP")
-        self.bottom_bar = BottomBar(10, 810,self)
+        self.bottom_bar = BottomBar(10, 810, self)
         self.chat = Chat(1000, 125)
         self.draw_color = (0, 0, 0)
         for player in self.players:
@@ -73,10 +74,15 @@ class Game(object):
                     break
                 if pygame.mouse.get_pressed()[0]:
                     self.check_clicks()
+                    self.bottom_bar.button_events()
+                if event.type == pygame.KEYDOWN:
+                    key_name = pygame.key.name(event.key)
+                    key_name = key_name.upper()
+                    self.chat.type(key_name)
+                    # print
         pygame.quit()
 
-
-if __name__ == "__main__":
-    pygame.font.init()
-    g = Game()
-    g.run()
+# if __name__ == "__main__":
+#     pygame.font.init()
+#     g = Game(win)
+#     g.run()

@@ -33,9 +33,16 @@ class Chat(object):
         win.blit(type_chat,(self.x+5,self.y+50 - type_chat.get_height()/2))
 
     def type(self, char, delete=False):
-        if delete:
+        if char == "BACKSPACE":
             if len(self.typing)>0:
                 self.typing = self.typing[:-1]
-            else:
+            elif char == "SPACE":
+                self.typing += " "
+
+            elif len(char)==1:
+
                 self.typing += char
+
+            if len(self.typing)>=25:
+                self.typing = self.typing[:25]
 
